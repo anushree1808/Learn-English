@@ -1,0 +1,78 @@
+<html>
+<head>
+<style>
+	#form
+	{
+		border:10px solid gray;
+		position:absolute;
+		top:50px;
+		left:200px;
+		padding:20px;
+	}
+</style>
+<script>
+	var i=0, number=4, set;
+
+	var bag_of_words = new Array();
+	bag_of_words[0] = "girl , read , book";
+	bag_of_words[1] = "boy , play,  football";
+	bag_of_words[2] = "girl , sleep , bed";
+	bag_of_words[3] = "dog ,  eat ,  food";
+
+	var threshold = new Array();
+	threshold[0] = -1.03458;
+	threshold[1] = -0.75953;
+	threshold[2] = -0.86137;
+	threshold[3] = -1.20998;
+
+	function fillUI()
+	{
+		var bow = document.getElementById("bow");
+		bow.innerHTML = bag_of_words[i];
+		document.getElementById("sen").value = "";
+		i++;
+		if(i==number)
+			i=0;
+	}
+
+	function evalu()
+	{
+		var sentence = document.getElementById("sen").value;
+		var words = bag_of_words[i-1].split(",");
+		var tags = "";
+		for (j in words)
+			tags+=words[j]+" ";
+		alert(tags);
+		var input = "";
+		input += threshold[i-1]+" "+tags+sentence;
+		alert(input);
+
+		var obj = new XMLHttpRequest();
+		obj.open("GET", "sentCheck.php?input="+input, false);
+		obj.onreadystatechange = function()
+		{
+			if(obj.readyState==4 && obj.status=="200")
+			{
+				alert(obj.responseText);
+				document.getElementById("scores").innerHTML = obj.responseText;
+			}
+		};
+		obj.send(null);
+	}
+
+</script>
+</head>
+<body onload="fillUI()">
+<div id="form">
+<center>
+<h1>English Sentence Evaluator</h1>
+<label><h2>Construct sentence to describe acitvity using the bag of words</h2></label>
+</center>
+Bag of Words : &nbsp&nbsp<span id="bow"></span><br><br>
+Enter the sentence : <input type="textbox" name="sen" id="sen" width="600px"/><br> <br>
+Score : &nbsp&nbsp<span id="scores">0</span><br> <br>
+<button id="submit" onclick="evalu()">CHECK</button><br><br>
+<button id="next" onclick="fillUI()">NEXT</button>
+</div>
+</body>
+</html>
